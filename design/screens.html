@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="da" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PIXELBOG — skærmoversigt</title>
+  <link rel="stylesheet" href="styles/tokens.css">
+  <style>
+    /* Oversigtstavlens egen opsætning — ikke en del af appen */
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; background: var(--p-crt-0); color: var(--p-crt-4); font-family: var(--font-data); font-size: 16px; line-height: 1.5; }
+    .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    a { color: var(--p-blue); text-underline-offset: 4px; text-decoration-thickness: 2px; }
+    a:focus-visible { outline: 2px solid var(--p-yellow); outline-offset: 4px; }
+    .page { max-width: 1760px; margin: 0 auto; padding: 40px 24px 96px; display: grid; gap: 64px; }
+    header { display: grid; gap: 12px; }
+    h1 { margin: 0; font-family: var(--font-display); font-size: 24px; line-height: 1.5; }
+    header p { margin: 0; max-width: 80ch; color: var(--p-crt-3); }
+    nav.toc { display: flex; flex-wrap: wrap; gap: 8px 24px; font-family: var(--font-ui); text-transform: uppercase; letter-spacing: .04em; }
+    section { display: grid; gap: 24px; }
+    h2 { margin: 0; font-family: var(--font-display); font-size: 16px; line-height: 1.5; padding-bottom: 8px; border-bottom: 4px solid var(--p-crt-2); }
+    .note { margin: 0; color: var(--p-crt-3); max-width: 90ch; font-size: 14px; }
+    .frames { display: flex; flex-wrap: wrap; gap: 32px 32px; align-items: flex-start; }
+    figure { margin: 0; display: grid; gap: 8px; }
+    figcaption { display: flex; justify-content: space-between; gap: 16px; align-items: baseline; font-family: var(--font-ui); text-transform: uppercase; letter-spacing: .04em; font-size: 16px; }
+    figcaption span { color: var(--p-crt-3); }
+    figcaption a { font-family: var(--font-data); text-transform: none; font-size: 14px; white-space: nowrap; }
+    .shot { position: relative; overflow: hidden; background: var(--p-crt-1); box-shadow: 0 0 0 4px var(--p-crt-4), 8px 8px 0 4px var(--p-crt-2); margin: 4px 12px 12px 4px; }
+    .shot iframe { position: absolute; top: 0; left: 0; border: 0; transform-origin: 0 0; background: #fff; }
+    /* Desktop 1280×800 @ 0.5 */
+    .d { width: 640px; height: 400px; }
+    .d iframe { width: 1280px; height: 800px; transform: scale(.5); }
+    /* Tablet 820×1060 @ 0.42 */
+    .t { width: 344px; height: 445px; }
+    .t iframe { width: 820px; height: 1060px; transform: scale(.42); }
+    /* Mobil 390×844 @ 0.52 */
+    .m { width: 203px; height: 439px; }
+    .m iframe { width: 390px; height: 844px; transform: scale(.52); }
+    @media (max-width: 720px) {
+      .d { width: 320px; height: 200px; } .d iframe { transform: scale(.25); }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <h1>PIXELBOG · Skærmoversigt</h1>
+      <p>Alle skærme er den rigtige app (<code>index.html</code>), sat i en bestemt tilstand via URL-parametre. Desktop vises i 1280 × 800, tablet i 820 × 1060 og mobil i 390 × 844, i lys og mørk tilstand. Klik »Åbn« for at se en skærm i fuld størrelse og klikke videre derfra.</p>
+      <nav class="toc" aria-label="Sektioner">
+        <a href="#login">Login</a><a href="#visning">Kontaktvisning</a><a href="#redigering">Redigering</a><a href="#ny">Ny kontakt</a><a href="#tilstande">Tomme tilstande og fejl</a><a href="#import">Import</a><a href="#tablet">Tablet og detaljer</a><a href="components.html">Komponenter →</a>
+      </nav>
+    </header>
+    <div id="board"></div>
+  </main>
+  <script>
+  (function () {
+    "use strict";
+    const SECTIONS = [
+      { id: "login", title: "1 · Login (titelskærm)", note: "Login virker med et vilkårligt brugernavn og kodeord. Kodeordet »forkert« giver fejlen om forkert login, og brugernavnet »offline« giver forbindelsesfejlen.", frames: [
+        ["d", "light", "login", "Titelskærm"], ["d", "dark", "login-auth", "Forkert login"], ["d", "light", "login-server", "Ingen forbindelse"],
+        ["m", "light", "login", "Titelskærm"], ["m", "dark", "login", "Titelskærm"], ["m", "dark", "login-server", "Ingen forbindelse"],
+      ] },
+      { id: "visning", title: "2 · Kontaktvisning (karakterark)", note: "Telefon, e-mail, web og adresse er rigtige links. Alder og »fødselsdag om N dage« regnes ud fra dags dato. Kontakter uden navn får en ?-blok og en genvej til at tilføje et navn.", frames: [
+        ["d", "light", "view", "Med foto"], ["d", "dark", "view", "Med foto"], ["d", "light", "view-nameless", "Uden navn"], ["d", "dark", "view-long", "Langt navn"],
+        ["m", "light", "list", "Liste"], ["m", "light", "view", "Karakterark"], ["m", "dark", "list", "Liste"], ["m", "dark", "view-photo", "Karakterark"],
+      ] },
+      { id: "redigering", title: "3 · Redigering med ugemte ændringer", note: "Ugemte ændringer vises med en blinkende ★ og badget »IKKE GEMT« i panel-hovedet (på mobil også i kabinettet). Navigerer man væk, spørger en RPG-dialog først. E-mail og telefon tjekkes, når man forlader feltet.", frames: [
+        ["d", "light", "edit-dirty", "Ikke gemt"], ["d", "dark", "edit-dirty", "Ikke gemt"], ["d", "dark", "new-errors", "Valideringsfejl"],
+        ["m", "light", "edit-dirty", "Ikke gemt"], ["m", "dark", "edit-dirty", "Ikke gemt"], ["m", "light", "discard", "Kassér?"],
+      ] },
+      { id: "ny", title: "4 · Ny kontakt", note: "Den tomme formular med valg af adressebog øverst. Én tom telefon- og e-mailrække står klar. Resten tilføjes med »+ Tilføj«.", frames: [
+        ["d", "light", "new", "Ny kontakt"], ["d", "dark", "new", "Ny kontakt"], ["m", "dark", "new", "Ny kontakt"], ["m", "light", "new", "Ny kontakt"],
+      ] },
+      { id: "tilstande", title: "5 · Tomme tilstande og fejl", note: "Konflikten opstår også i den rigtige app, første gang man gemmer Jonas Holm. Slet-dialogen starter på NEJ, og ↑/↓ flytter markøren.", frames: [
+        ["d", "dark", "empty-book", "Tom bog"], ["d", "light", "no-results", "Ingen søgeresultater"], ["d", "dark", "none", "Ingen valgt"],
+        ["d", "light", "loading", "Indlæser"], ["d", "light", "conflict", "Konflikt"], ["d", "dark", "delete", "Slet · JA/NEJ"],
+        ["m", "dark", "loading", "Indlæser"], ["m", "light", "delete", "Slet · JA/NEJ"], ["m", "dark", "conflict", "Konflikt"], ["m", "light", "no-results", "Ingen resultater"],
+      ] },
+      { id: "import", title: "6 · Import af .vcf", note: "Prøv selv med assets/eksempel-kontakter.vcf. Den indeholder 44 kort, hvoraf 2 er defekte, så resultatet bliver »42 importeret, 2 fejlede«. Eksport henter den aktuelle bog som en rigtig .vcf-fil.", frames: [
+        ["d", "light", "import-pick", "Vælg fil"], ["d", "dark", "import-ready", "Vælg bog"], ["d", "light", "import-progress", "HP-bar"], ["d", "dark", "import-result", "Resultat"],
+        ["m", "light", "import-result", "Resultat"], ["m", "dark", "import-progress", "HP-bar"],
+      ] },
+      { id: "tablet", title: "7 · Tablet, toasts og indstillinger", note: "På tablet bliver sidebjælken en skuffe. Brugermenuen har tema (Lys/Mørk/Auto), CRT-scanlines, animationer, 8-bit-lyde og Log ud. Scanlines er kun aktive i mørk tilstand.", frames: [
+        ["t", "light", "drawer", "Skuffe åben"], ["t", "dark", "view", "To kolonner"], ["d", "dark", "toast-delete", "GAME OVER-toast", "fx=scan"], ["d", "light", "usermenu", "Brugermenu"], ["d", "light", "toast", "GEMT!-toast"], ["m", "dark", "drawer", "Adressebøger"],
+      ] },
+    ];
+    const DEV = { d: "Desktop", t: "Tablet", m: "Mobil" };
+    const TH = { light: "Lys", dark: "Mørk" };
+    document.getElementById("board").outerHTML = SECTIONS.map((s) => `
+      <section id="${s.id}" aria-labelledby="${s.id}-h">
+        <h2 id="${s.id}-h">${s.title}</h2>
+        <p class="note">${s.note}</p>
+        <div class="frames">${s.frames.map(([dev, theme, demo, label, extra]) => {
+          const src = `index.html?demo=${demo}&theme=${theme}${extra ? "&" + extra : ""}`;
+          const name = `${label} · ${DEV[dev]} · ${TH[theme]}`;
+          return `<figure>
+            <figcaption>${label}<span>${DEV[dev]} · ${TH[theme]}</span><a href="${src}" target="_blank" rel="noopener">Åbn ↗<span class="sr-only"> ${name}</span></a></figcaption>
+            <div class="shot ${dev}"><iframe src="${src}" title="${name}" loading="lazy" tabindex="-1"></iframe></div>
+          </figure>`;
+        }).join("")}</div>
+      </section>`).join("");
+  })();
+  </script>
+</body>
+</html>

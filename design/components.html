@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="da" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PIXELBOG — komponenter og tokens</title>
+  <style>
+/* OD-LAYOUT-PRIMITIVES v1 — structure only: display, flex/grid, overflow, wrapping, ratio, geometry.
+   Put this @layer first; product CSS outside the layer always wins. */
+@layer od-layout {
+  :where(.od-stack,.od-row,.od-row-top,.od-cluster,.od-grid,.od-field,.od-stat,.od-cell,.od-tile) > :where(*) { min-width: 0; }
+
+  /* containers */
+  .od-stack   { display: flex; flex-direction: column; gap: var(--od-gap, 8px); }
+  .od-row     { display: flex; align-items: center; gap: var(--od-gap, 8px); }
+  .od-row-top { display: flex; align-items: flex-start; gap: var(--od-gap, 8px); }
+  .od-cluster { display: flex; flex-wrap: wrap; align-items: center; gap: var(--od-gap, 8px); }
+  .od-fill    { flex: 1 1 0; min-width: 0; }
+  .od-fixed   { flex: none; }
+  .od-grid    { display: grid; gap: var(--od-gap, 12px); grid-template-columns: repeat(var(--od-cols, 3), minmax(0, 1fr)); }
+
+  /* stacked information: each piece is its own line — never sibling inline spans */
+  .od-stat, .od-field, .od-cell { display: grid; gap: var(--od-gap, 2px); }
+  :where(.od-stat,.od-field,.od-cell) > :where(*) { display: block; }
+  .od-tile { display: grid; grid-template-rows: auto 1fr; }
+  :where(.od-tile) > :where(*) { display: block; }
+
+  /* media keeps its intrinsic ratio by default; never a distorted or cropped
+     cover by accident. height:auto lets the ratio win over an <img height="…">
+     attribute. Cropping to a uniform box is an explicit opt-in: set --od-ratio
+     AND add .od-media-cover together (per the core rule, only where a crop is
+     deliberate — tile thumbs, decorative fills — never on full-frame content). */
+  .od-media { display: block; width: 100%; height: auto; aspect-ratio: var(--od-ratio, auto); }
+  .od-media-cover { object-fit: cover; }
+
+  /* functional inline SVG icons opt into bounded geometry; content SVGs keep their own */
+  .od-icon { display: inline-block; inline-size: var(--od-icon-size, 1em); block-size: var(--od-icon-size, 1em); flex: none; }
+
+  /* data text only — authored copy is rewritten to its budget instead */
+  .od-truncate { display: block; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .od-clamp-2, .od-clamp-3 { display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+  .od-clamp-2 { -webkit-line-clamp: 2; }
+  .od-clamp-3 { -webkit-line-clamp: 3; }
+  .od-lines-2 { min-height: calc(2 * 1.4em); }   /* block-level reservation for a shared baseline */
+  .od-nowrap  { white-space: nowrap; }           /* 数字+单位 · 价格+起 · 日期+星期 */
+  .od-keep    { word-break: keep-all; overflow-wrap: anywhere; } /* CJK labels break at spaces / <wbr> first */
+
+  /* screen skeleton (optional): bars take their own space, the middle scrolls — no padding guessed for chrome */
+  .od-screen { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; height: 100%; }
+  .od-scroll { overflow-y: auto; overscroll-behavior: contain; min-height: 0; }
+
+  /* horizontal rail: the next item peeks at the edge; trailing room survives overflow */
+  .od-rail { display: flex; gap: var(--od-gap, 8px); overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none;
+             padding-inline: var(--od-rail-pad, 16px); scroll-padding-inline: var(--od-rail-pad, 16px); }
+  .od-rail::-webkit-scrollbar { display: none; }
+  :where(.od-rail) > :where(*) { flex: none; scroll-snap-align: start; }
+  :where(.od-rail) > :where(:last-child) { margin-inline-end: var(--od-rail-pad, 16px); }
+
+  .od-spacer { flex: none; visibility: hidden; pointer-events: none; }
+  .od-touch  { min-width: 44px; min-height: 44px; }
+}
+/* /OD-LAYOUT-PRIMITIVES v1 */
+
+  </style>
+  <link rel="stylesheet" href="styles/tokens.css">
+  <link rel="stylesheet" href="styles/app.css">
+  <style>
+    /* Arkets egen opsætning — ikke en del af appen */
+    body { background: var(--p-crt-0); color: var(--p-crt-4); }
+    .sheet-page { max-width: 1600px; margin: 0 auto; padding: var(--sp-10) var(--sp-6) var(--sp-16); display: grid; gap: var(--sp-10); }
+    .page-head { display: grid; gap: var(--sp-3); }
+    .page-head h1 { font-family: var(--font-display); font-size: var(--fs-display-l); line-height: 1.5; }
+    .page-head p { max-width: 72ch; color: var(--p-crt-3); }
+    .page-head nav { display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-6); font-family: var(--font-ui); text-transform: uppercase; }
+    .page-head nav a { color: var(--p-blue); }
+    .master { display: grid; gap: var(--sp-4); padding: var(--sp-6); background: var(--p-crt-1); }
+    .master h2, .col-title { font-family: var(--font-display); font-size: var(--fs-display-m); line-height: 1.5; text-transform: uppercase; }
+    .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: var(--sp-3); }
+    .sw { display: grid; gap: var(--sp-1); }
+    .sw > * { display: block; }
+    .sw i { height: 56px; border: 2px solid var(--p-crt-4); }
+    .sw b { font-family: var(--font-ui); font-weight: 400; text-transform: uppercase; }
+    .sw span { font-size: var(--fs-data-s); color: var(--p-crt-3); }
+    .cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-6); }
+    @media (max-width: 1100px) { .cols { grid-template-columns: minmax(0, 1fr); } }
+    .col { background: var(--c-ground); color: var(--c-text); padding: var(--sp-6); display: grid; gap: var(--sp-8); align-content: start; }
+    .col-title { color: var(--c-text); }
+    [data-theme="light"].col .col-title { color: var(--p-dmg-0); }
+    .card { padding: var(--sp-5); display: grid; gap: var(--sp-5); margin: 4px 8px 8px 4px; background: var(--c-panel); container-type: inline-size; }
+    .card > h3 { font-family: var(--font-ui); font-size: var(--fs-ui); text-transform: uppercase; letter-spacing: var(--ls-ui); padding-bottom: var(--sp-2); border-bottom: 2px solid var(--c-line); }
+    .spec { font-size: var(--fs-data-s); line-height: 1.43; color: var(--c-text-soft); }
+    .roles { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--sp-3); }
+    .role { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: var(--sp-2); align-items: center; }
+    .role i { width: 32px; height: 32px; box-shadow: 0 0 0 2px var(--c-frame); }
+    .role span { display: grid; font-size: var(--fs-data-s); line-height: 1.3; }
+    .role span > * { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .demo-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3) var(--sp-4); }
+    .state-grid { display: grid; grid-template-columns: 96px repeat(3, minmax(0, auto)); gap: var(--sp-2) var(--sp-3); align-items: center; justify-content: start; }
+    .state-grid > .t-ui { color: var(--c-text-soft); }
+    .type-sample { display: grid; gap: var(--sp-1); }
+    .type-sample > * { display: block; }
+    .type-sample small { font-size: var(--fs-data-s); color: var(--c-text-soft); }
+    .icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: var(--sp-3); }
+    .icons figure { margin: 0; display: grid; justify-items: center; gap: var(--sp-2); padding: var(--sp-3) var(--sp-1); background: var(--c-panel-hi); }
+    .icons figcaption { font-size: 12px; line-height: 1.3; color: var(--c-text-soft); }
+    .avatars { display: flex; flex-wrap: wrap; gap: var(--sp-4); align-items: end; }
+    .avatars figure { margin: 0; display: grid; justify-items: center; gap: var(--sp-2); }
+    .avatars figcaption { font-size: var(--fs-data-s); color: var(--c-text-soft); text-align: center; max-width: 12ch; }
+    .list-demo { background: var(--c-panel); margin: 2px; box-shadow: 0 0 0 2px var(--c-line); }
+    .grid-spec { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--sp-4); }
+    .grid-spec > div { display: grid; gap: var(--sp-2); justify-items: start; }
+    .grid-spec > div > * { display: block; }
+    .grid-box { width: 64px; height: 48px; background: var(--c-panel-hi); }
+    .space-bars { display: grid; gap: var(--sp-1); }
+    .space-bars div { display: grid; grid-template-columns: 48px auto; gap: var(--sp-3); align-items: center; font-size: var(--fs-data-s); }
+    .space-bars i { display: block; height: 12px; background: var(--c-primary); }
+    .toast-static { position: static; animation: none; }
+  </style>
+</head>
+<body>
+  <main class="sheet-page">
+    <header class="page-head">
+      <h1>PIXELBOG · Komponenter og tokens</h1>
+      <p>Genbrugelige komponenter vist side om side i lys tilstand (DMG) og mørk tilstand (CRT-nat). Alt bygger på de samme semantiske <code>--c-*</code>-roller i <code>styles/tokens.css</code>. Tokens findes også som <code>tokens/tokens.json</code> (DTCG) og <code>tokens/tokens.ts</code>.</p>
+      <nav aria-label="Andre sider"><a href="index.html">Åbn appen</a><a href="screens.html">Skærmoversigt</a></nav>
+    </header>
+
+    <section class="master" aria-labelledby="pal-title">
+      <h2 id="pal-title">PIXELBOG-16 · hele paletten</h2>
+      <div class="swatches" id="master"></div>
+      <p class="spec">Flade farver, ingen gradienter. DMG-tonerne bærer lys tilstand, PICO-8-inspirerede toner bærer mørk tilstand. Vin-rød (#7E2553) er fare-farven i lys tilstand. Fotos kvantiseres til 4 grønne toner (lys) eller 5 kølige toner (mørk).</p>
+    </section>
+
+    <div class="cols">
+      <section class="col" data-theme="light" aria-label="Lys tilstand"></section>
+      <section class="col" data-theme="dark" aria-label="Mørk tilstand"></section>
+    </div>
+  </main>
+  <div class="toasts" id="toasts"></div>
+  <script src="scripts/pixel.js"></script>
+  <script src="scripts/data.js"></script>
+  <script>
+  (function () {
+    "use strict";
+    const { icon, identicon, questionBlock, esc, ICONS } = window.Pixel;
+    const D = window.PixelData;
+    const P = [
+      ["dmg-0", "#0F380F", "Blæk"], ["dmg-1", "#306230", "Mørk grøn"], ["dmg-2", "#8BAC0F", "LCD-grøn"], ["dmg-3", "#C9D89A", "Papirgrøn"],
+      ["dmg-4", "#E6EECB", "Papir lys"], ["wine", "#7E2553", "Vin (fare)"], ["crt-0", "#0B0E1A", "Natsort"], ["crt-1", "#1D2B53", "RPG-blå"],
+      ["crt-2", "#83769C", "Lavendel"], ["crt-3", "#C2C3C7", "Lysegrå"], ["crt-4", "#FFF1E8", "Fosfor-hvid"], ["blue", "#29ADFF", "Blå"],
+      ["green", "#00E436", "Grøn"], ["yellow", "#FFEC27", "Gul"], ["pink", "#FF77A8", "Pink"], ["red", "#FF004D", "Rød"],
+    ];
+    document.getElementById("master").innerHTML = P.map(([k, h, n]) => `<div class="sw"><i style="background:${h}"></i><b>${n}</b><span>--p-${k} · ${h}</span></div>`).join("");
+
+    const ROLES = {
+      light: [["ground", "#8BAC0F"], ["panel", "#C9D89A"], ["panel-hi", "#E6EECB"], ["frame", "#0F380F"], ["shadow", "#306230"], ["text", "#0F380F", "8.6:1"], ["text-soft", "#306230", "4.7:1"], ["primary", "#306230", "6.0:1"], ["danger", "#7E2553", "7.7:1"], ["select-bg", "#8BAC0F", "5.0:1"], ["cursor", "#0F380F"], ["focus", "#7E2553"]],
+      dark: [["ground", "#0B0E1A"], ["panel", "#1D2B53"], ["panel-hi", "#0B0E1A"], ["frame", "#FFF1E8"], ["shadow", "#83769C"], ["text", "#FFF1E8", "12.5:1"], ["text-soft", "#C2C3C7", "7.8:1"], ["primary", "#29ADFF", "7.8:1"], ["danger", "#FF004D", "4.9:1"], ["select-bg", "#29ADFF", "7.8:1"], ["cursor", "#FFEC27"], ["focus", "#FFEC27"]],
+    };
+
+    const c = (o) => Object.assign({ prefix: "", given: "", middle: "", family: "", suffix: "", org: "", nickname: "", title: "", phones: [], emails: [], addresses: [], urls: [], photo: null }, o);
+    const mette = D.CONTACTS.find((x) => x.given === "Mette");
+    const lars = D.CONTACTS.find((x) => x.given === "Lars");
+    const av = (name, size) => `<span class="avatar${size ? " avatar-" + size : ""}">${identicon(name, "Pixel-avatar for " + name)}</span>`;
+    const photo = (p, size, alt) => `<span class="avatar${size ? " avatar-" + size : ""}"><img class="photo-light" src="${p.light}" width="40" height="40" alt="${alt}"><img class="photo-dark" src="${p.dark}" width="40" height="40" alt="${alt}"></span>`;
+    const q = (size) => `<span class="avatar${size ? " avatar-" + size : ""}">${questionBlock("Kontakt uden navn")}</span>`;
+    const btn = (cls, label, ic, extra = "") => `<button type="button" class="btn btn-s ${cls}"${extra}>${ic ? icon(ic) : ""}<span class="btn-label">${label}</span></button>`;
+    const row = (inner, state) => `<a class="row${state === "hover" ? " is-hover" : ""}" href="#" ${state === "sel" ? 'aria-current="true"' : ""} onclick="return false"><span class="cursor" aria-hidden="true"></span>${inner}</a>`;
+    const rowInner = (avatar, name, sub, nameless) => `${avatar}<span class="row-text"><span class="row-name t-tabular${nameless ? " is-nameless" : ""}">${esc(name)}</span><span class="row-sub">${esc(sub)}</span></span>`;
+
+    function column(theme) {
+      const roles = ROLES[theme].map(([k, h, cr]) => `<div class="role"><i style="background:var(--c-${k})"></i><span><b>--c-${k}</b><span>${h}${cr ? " · " + cr : ""}</span></span></div>`).join("");
+      const id = (s) => theme + "-" + s;
+      return `
+        <h2 class="col-title">${theme === "light" ? "Lys · DMG" : "Mørk · CRT-nat"}</h2>
+
+        <div class="card px"><h3>Semantiske farveroller</h3><div class="roles">${roles}</div>
+          <p class="spec">Kontrast er målt mod <code>--c-panel</code>. <code>--c-line</code> og <code>--c-shadow</code> bruges kun til grafik (≥ 3:1).</p></div>
+
+        <div class="card px"><h3>Typografi</h3>
+          <div class="type-sample"><span class="t-display-xl">PIXELBOG</span><small>Press Start 2P · 32 px · logo</small></div>
+          <div class="type-sample"><span class="t-display-l">Karakterark</span><small>Press Start 2P · 24 px · overskrift</small></div>
+          <div class="type-sample"><span class="t-display-m">TELEFONER</span><small>Press Start 2P · 16 px · panel-titel</small></div>
+          <div class="type-sample"><span class="t-ui">Gem · Annuller · Mobil</span><small>Silkscreen · 16 px · knapper og labels</small></div>
+          <div class="type-sample"><span class="t-data"><strong>Mette Kristensen</strong> · <span class="t-tabular">+45 28 14 63 90</span></span><small>IBM Plex Mono · 16 px · alle data, tabulære tal</small></div>
+          <div class="type-sample"><span class="t-data-s">Vesterbrogade 12, 3. tv., 1620 København V</span><small>IBM Plex Mono · 14 px · kun meta-linjer</small></div>
+          <div class="type-sample"><span style="font-family:var(--font-dialog);font-size:var(--fs-dialog);line-height:1.25">Vil du virkelig slette Mette Kristensen?</span><small>VT323 · 24 px · RPG-dialoger</small></div>
+        </div>
+
+        <div class="card px"><h3>Læsbarhed ved høj tæthed</h3>
+          <p class="spec">Pixel-skrift bruges kun til korte labels. Navne, numre og adresser står i Plex Mono med tabulære tal, så kolonner flugter og tal er lette at skimme.</p>
+          <div class="list-demo">
+            ${row(rowInner(photo(mette.photo, "", ""), "Mette Kristensen", "Grafisk Værksted ApS"))}
+            ${row(rowInner(av("Lars Nørgaard"), "Lars Nørgaard", "+45 21 45 98 30"))}
+            ${row(rowInner(av("Henrik Bjerregaard Christiansen-Vindeløv"), "Henrik Bjerregaard Christiansen-Vindeløv", "Konsulenthuset Østerbro"))}
+            ${row(rowInner(av("Åse Brandt"), "Åse Brandt", "+45 86 12 40 18"))}
+          </div>
+        </div>
+
+        <div class="card px"><h3>Pixel-grid, rammer og skygger</h3>
+          <div class="space-bars">${[4, 8, 12, 16, 24, 32, 48, 64].map((n) => `<div><span class="t-tabular">${n}px</span><i style="width:${n * 2}px"></i></div>`).join("")}</div>
+          <div class="grid-spec">
+            <div><span class="grid-box px"></span><span class="spec">Panel · 4 px ramme · 4 px skygge</span></div>
+            <div><span class="grid-box px px-thin px-flat"></span><span class="spec">Felt · 2 px ramme · ingen skygge</span></div>
+            <div><span class="grid-box px px-flat"></span><span class="spec">Trykket · skygge 0</span></div>
+          </div>
+          <p class="spec">Rammen er fire box-shadows, så hjørnerne bliver trappetrin på 4 px. To ekstra skygger giver den hårde skygge uden blur. Se <code>pixelFrame()</code> i <code>tokens.ts</code>.</p>
+        </div>
+
+        <div class="card px"><h3>Knapper</h3>
+          <div class="state-grid">
+            <span></span><span class="t-ui">Primær</span><span class="t-ui">Sekundær</span><span class="t-ui">Farlig</span>
+            <span class="t-ui">Normal</span>${btn("btn-primary", "Gem", "check")}${btn("", "Rediger", "edit")}${btn("btn-danger", "Slet", "trash")}
+            <span class="t-ui">Hover</span>${btn("btn-primary is-hover", "Gem", "check")}${btn("is-hover", "Rediger", "edit")}${btn("btn-danger is-hover", "Slet", "trash")}
+            <span class="t-ui">Fokus</span>${btn("btn-primary is-focus", "Gem", "check")}${btn("is-focus", "Rediger", "edit")}${btn("btn-danger is-focus", "Slet", "trash")}
+            <span class="t-ui">Trykket</span>${btn("btn-primary is-pressed", "Gem", "check")}${btn("is-pressed", "Rediger", "edit")}${btn("btn-danger is-pressed", "Slet", "trash")}
+            <span class="t-ui">Fra</span>${btn("btn-primary", "Gem", "check", " disabled")}${btn("", "Rediger", "edit", " disabled")}${btn("btn-danger", "Slet", "trash", " disabled")}
+          </div>
+          <p class="spec">Hover og fokus viser en blinkende ▶. Trykket flytter knappen 2 px, og skyggen forsvinder. Fokus får desuden en 2 px ring i <code>--c-focus</code>. Prøv at klikke: knapperne er rigtige.</p>
+          <div class="demo-row">${btn("btn-icon", "", "close", ' aria-label="Luk"')}${btn("btn-ghost", "Tilbage til redigering", "")}<button type="button" class="btn btn-primary">${icon("plus")}<span class="btn-label">Ny kontakt</span></button></div>
+        </div>
+
+        <div class="card px"><h3>Inputfelter</h3>
+          <div class="field"><label class="label" for="${id("a")}">Fornavn</label><input class="input" id="${id("a")}" value="Mette"></div>
+          <div class="field"><label class="label" for="${id("b")}">Efternavn · fokus</label><input class="input is-focus" id="${id("b")}" value="Kristensen"></div>
+          <div class="field"><label class="label" for="${id("c")}">E-mail · fejl</label><input class="input" id="${id("c")}" value="mette@mail" aria-invalid="true" aria-describedby="${id("ce")}"><p class="error-text" id="${id("ce")}">${icon("alert")}<span>Det ligner ikke en e-mailadresse. Den skal indeholde @ og et domæne, fx navn@mail.dk.</span></p></div>
+          <div class="field"><label class="label" for="${id("d")}">Titel</label><p class="help" id="${id("dh")}">Fx Dr. eller Prof.</p><input class="input" id="${id("d")}" placeholder="Valgfrit" aria-describedby="${id("dh")}"></div>
+          <div class="search"><label class="sr-only" for="${id("s")}">Søg</label>${icon("search")}<input class="input" id="${id("s")}" type="search" placeholder="Søg navn, nummer, by…"></div>
+          <div class="field"><label class="label" for="${id("n")}">Note</label><textarea class="textarea" id="${id("n")}" rows="3">Elsker brætspil.</textarea></div>
+        </div>
+
+        <div class="card px"><h3>Type-vælger og gentagelige rækker</h3>
+          <div class="rep-row rep-head hide-narrow" aria-hidden="true"><span class="label">Type</span><span class="label">Telefonnummer</span><span></span></div>
+          <div class="rep-row"><span class="select-wrap"><select class="select" aria-label="Type, telefon 1"><option selected>Mobil</option><option>Hjem</option><option>Arbejde</option><option>Andet</option></select></span><div class="rep-value field"><input class="input" type="tel" value="+45 28 14 63 90" aria-label="Telefonnummer 1"></div>${btn("btn-icon", "", "close", ' aria-label="Fjern telefon 1"')}</div>
+          <div class="rep-row"><span class="select-wrap"><select class="select" aria-label="Type, telefon 2"><option>Mobil</option><option selected>Hjem</option><option>Arbejde</option><option>Andet</option></select></span><div class="rep-value field"><input class="input" type="tel" value="+45 33 21 45 67" aria-label="Telefonnummer 2"></div>${btn("btn-icon", "", "close", ' aria-label="Fjern telefon 2"')}</div>
+          <div>${btn("", "Tilføj telefon", "plus")}</div>
+          <div class="demo-row"><span class="tag">Mobil</span><span class="tag">Hjem</span><span class="tag">Arbejde</span><span class="tag">Andet</span></div>
+        </div>
+
+        <div class="card px"><h3>Pixel-avatar</h3>
+          <div class="avatars">
+            ${["Fatima Ali", "Jonas Holm", "Ida Bach", "Poul Kjeldsen", "Sofie Lund", "Fjordnet Support"].map((n) => `<figure>${av(n, "m")}<figcaption>${n}</figcaption></figure>`).join("")}
+          </div>
+          <div class="avatars">
+            <figure>${photo(mette.photo, "l", "Foto af Mette Kristensen")}<figcaption>Foto · 160 px</figcaption></figure>
+            <figure>${photo(lars.photo, "m", "Foto af Lars Nørgaard")}<figcaption>Foto · 64 px</figcaption></figure>
+            <figure>${q("m")}<figcaption>Uden navn</figcaption></figure>
+            <figure>${av("Mette Kristensen")}<figcaption>40 px</figcaption></figure>
+          </div>
+          <p class="spec">8×8 spejlsymmetrisk identicon. Mønster og farve afledes af et FNV-1a-hash af navnet, så samme navn altid giver samme sprite. Fotos beskæres til et kvadrat, nedskaleres til 40×40 og mappes til temaets luminans-rampe. Visningen bruger <code>image-rendering: pixelated</code>.</p>
+        </div>
+
+        <div class="card px"><h3>Listerække</h3>
+          <div class="list-demo">
+            ${row(rowInner(av("Fatima Ali"), "Fatima Ali", "Rigshospitalet"))}
+            ${row(rowInner(av("Jonas Holm"), "Jonas Holm", "Fjordnet A/S"), "hover")}
+            ${row(rowInner(photo(mette.photo, "", ""), "Mette Kristensen", "Grafisk Værksted ApS"), "sel")}
+            ${row(rowInner(q(""), "+45 61 22 90 14", "Intet navn – tilføj et", true))}
+          </div>
+          <p class="spec">Normal · hover · valgt (▶ fast) · uden navn. Kontakter uden navn vises med deres nummer og ?-blok og sorteres under »#« sidst.</p>
+        </div>
+
+        <div class="card px"><h3>RPG-dialog</h3>
+          <div class="rpg" role="group" aria-label="Eksempel på RPG-dialog">
+            <div class="rpg-inner">
+              <span class="rpg-speaker">Slet kontakt</span>
+              <p class="rpg-text">Vil du virkelig slette Mette Kristensen? Kontakten forsvinder også fra serveren.<span class="caret blink" aria-hidden="true"></span></p>
+              <div class="choices" role="group" aria-label="Valg">
+                <button type="button" class="choice choice-danger">JA<span class="choice-hint">Slet kontakten</span></button>
+                <button type="button" class="choice" style="outline:2px solid var(--c-focus);outline-offset:-2px">NEJ<span class="choice-hint">Behold den</span></button>
+              </div>
+            </div>
+          </div>
+          <p class="spec">Teksten skrives frem tegn for tegn (24 ms). Et klik viser hele teksten med det samme. Skærmlæsere får hele teksten fra starten. Fokus starter på det sikre valg (NEJ), og ↑/↓ flytter markøren.</p>
+        </div>
+
+        <div class="card px"><h3>Toast og badges</h3>
+          <div class="toast toast-static">${icon("check")}<div class="toast-text"><strong class="toast-title">GEMT!</strong><span class="toast-msg">Mette Kristensen er opdateret.</span></div></div>
+          <div class="toast toast-static">${icon("trash")}<div class="toast-text"><strong class="toast-title">GAME OVER</strong><span class="toast-msg">Kontakt slettet: Thomas Vestergaard.</span><span><button type="button" class="btn btn-s">Fortryd</button></span></div></div>
+          <div class="demo-row"><span class="unsaved-star blink" aria-hidden="true">★</span><span class="badge">Ikke gemt</span><span class="badge">3 nye</span></div>
+        </div>
+
+        <div class="card px"><h3>Progress bar (HP)</h3>
+          <div class="hp"><div class="hp-top"><span class="od-row" style="--od-gap:8px">${icon("heart", "ic-s")}<span id="${id("hp")}">Import</span></span><span class="t-tabular">23 / 44</span></div>
+          <div class="hp-bar" role="progressbar" aria-labelledby="${id("hp")}" aria-valuemin="0" aria-valuemax="44" aria-valuenow="23">${Array.from({ length: 20 }, (_, i) => `<i class="${i < 10 ? "on" : ""}"></i>`).join("")}</div></div>
+          <p class="spec">20 segmenter, der fyldes i hele trin. Den har <code>role="progressbar"</code> og <code>aria-valuetext</code>.</p>
+        </div>
+
+        <div class="card px"><h3>Kontakter og valg</h3>
+          <button type="button" class="switch" role="switch" aria-checked="true"><span class="t-data">CRT-scanlines (mørk)</span><span class="switch-track" aria-hidden="true"><span class="switch-off">Fra</span><span class="switch-on">Til</span></span></button>
+          <button type="button" class="switch" role="switch" aria-checked="false"><span class="t-data">8-bit-lyde</span><span class="switch-track" aria-hidden="true"><span class="switch-off">Fra</span><span class="switch-on">Til</span></span></button>
+          <div class="segmented" role="group" aria-label="Tema"><button type="button" aria-pressed="${theme === "light"}">Lys</button><button type="button" aria-pressed="${theme === "dark"}">Mørk</button><button type="button" aria-pressed="false">Auto</button></div>
+          <div class="radio-menu"><label><input type="radio" name="${id("r")}" checked><span class="cursor" aria-hidden="true"></span><span>Arbejde</span><span class="count">11</span></label><label><input type="radio" name="${id("r")}"><span class="cursor" aria-hidden="true"></span><span>Familie</span><span class="count">7</span></label></div>
+        </div>
+
+        <div class="card px"><h3>Tomme tilstande og loader</h3>
+          <div class="loader" role="status" style="padding:var(--sp-4)">${icon("brand", "sprite")}<p class="loader-text">INDLÆSER<span class="loader-dots" aria-hidden="true"><span>.</span><span>.</span><span>.</span></span></p></div>
+          <div class="empty" style="padding:var(--sp-4)">${icon("ghost", "sprite")}<p class="empty-title">Ingen kontakter fundet…</p><p class="empty-text">Prøv en anden søgning.</p></div>
+        </div>
+
+        <div class="card px"><h3>Pixel-ikoner · 8×8</h3>
+          <div class="icons">${Object.keys(ICONS).map((k) => `<figure>${icon(k, "ic-m")}<figcaption>${k}</figcaption></figure>`).join("")}</div>
+          <p class="spec">Én familie: 8×8 grid, fyld i <code>currentColor</code>, <code>crispEdges</code>. Ikonerne vises kun i heltalsskalaer: 16, 24, 32 eller 64 px.</p>
+        </div>`;
+    }
+    document.querySelectorAll(".col").forEach((col) => { col.innerHTML = column(col.dataset.theme); });
+  })();
+  </script>
+</body>
+</html>

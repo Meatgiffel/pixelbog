@@ -1,0 +1,26 @@
+# Kopiér til docker-compose.yml og tilpas.
+# PIXELBOG skal kunne nå Radicale over Docker-netværket.
+
+services:
+  pixelbog:
+    build: .
+    restart: unless-stopped
+    environment:
+      # Hvor nginx i containeren finder Radicale (uden / til sidst)
+      RADICALE_URL: http://radicale:5232
+      # Sæt kun, hvis appen ligger under en sti på dit domæne, fx /kontakter
+      # BASE_PATH: /kontakter
+    ports:
+      - "8080:8080"
+    # Kører Radicale direkte på værten (ikke i Docker)? Brug i stedet:
+    #   RADICALE_URL: http://host.docker.internal:5232
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
+
+  # Har du ikke allerede Radicale i Docker, kan den køre ved siden af:
+  # radicale:
+  #   image: tomsquest/docker-radicale
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./radicale/data:/data
+  #     - ./radicale/config:/config:ro

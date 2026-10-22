@@ -1,0 +1,184 @@
+/* ==========================================================================
+   PIXELBOG — design-tokens
+   Kilde til sandheden for palet, skrifter, pixel-grid, rammer, skygger og
+   bevægelse. Spejles 1:1 i tokens/tokens.json og tokens/tokens.ts.
+   ========================================================================== */
+
+/* ---------- Skrifter (lokale woff2 fra Google Fonts, SIL OFL) ---------- */
+@font-face { font-family: "Press Start 2P"; src: url("../fonts/press-start-2p-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Silkscreen"; src: url("../fonts/silkscreen-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Silkscreen"; src: url("../fonts/silkscreen-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("../fonts/ibm-plex-mono-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("../fonts/ibm-plex-mono-600.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "VT323"; src: url("../fonts/vt323-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+
+:root {
+  /* ---------- PIXELBOG-16: hele paletten (16 flade farver) ---------- */
+  /* DMG — lys tilstand */
+  --p-dmg-0: #0F380F;   /* blæk */
+  --p-dmg-1: #306230;   /* mørk grøn */
+  --p-dmg-2: #8BAC0F;   /* LCD-grøn */
+  --p-dmg-3: #C9D89A;   /* papirgrøn */
+  --p-dmg-4: #E6EECB;   /* papir lys */
+  --p-wine:  #7E2553;   /* fare (lys) · delt */
+  /* CRT-nat — mørk tilstand */
+  --p-crt-0: #0B0E1A;   /* natsort */
+  --p-crt-1: #1D2B53;   /* RPG-blå */
+  --p-crt-2: #83769C;   /* lavendel */
+  --p-crt-3: #C2C3C7;   /* lysegrå */
+  --p-crt-4: #FFF1E8;   /* fosfor-hvid */
+  --p-blue:   #29ADFF;
+  --p-green:  #00E436;
+  --p-yellow: #FFEC27;
+  --p-pink:   #FF77A8;
+  --p-red:    #FF004D;
+
+  /* ---------- Skrifttyper ---------- */
+  --font-display: "Press Start 2P", "Silkscreen", monospace;   /* logo, H1-H2 — kun 16/24/32 px */
+  --font-ui:      "Silkscreen", "Press Start 2P", monospace;    /* knapper, labels, chips — 16 px */
+  --font-data:    "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace; /* navne, numre, adresser */
+  --font-dialog:  "VT323", "IBM Plex Mono", monospace;          /* RPG-tekstbokse — 24 px */
+
+  /* Pixel-skrifter er kun skarpe på multipla af 8 px */
+  --fs-display-xl: 32px;
+  --fs-display-l:  24px;
+  --fs-display-m:  16px;
+  --fs-ui:         16px;
+  --fs-data-l:     20px;
+  --fs-data:       16px;
+  --fs-data-s:     14px;   /* kun sekundære meta-linjer */
+  --fs-dialog:     24px;
+  --lh-data:       1.5;
+  --lh-ui:         1.25;
+  --ls-ui:         0.04em;
+
+  /* ---------- Pixel-grid (alt er multipla af 4 px) ---------- */
+  --px: 4px;
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+
+  /* ---------- Rammer og skygger ---------- */
+  --bw-panel: 4px;   /* paneler, dialoger, knapper */
+  --bw-field: 2px;   /* inputfelter, chips */
+  --sh-offset: 4px;  /* hård skygge, ingen blur */
+  --press-offset: 2px;
+
+  /* ---------- Størrelser ---------- */
+  --avatar-s: 40px;   /* listerække (8×8 sprite × 5) */
+  --avatar-m: 64px;
+  --avatar-l: 160px;  /* karakterark */
+  --touch: 44px;
+  --icon-s: 16px;
+  --icon-m: 24px;
+
+  /* ---------- Bevægelse (få frames, steps) ---------- */
+  --dur-press: 80ms;
+  --dur-fast: 160ms;
+  --dur-base: 240ms;
+  --dur-exit: 160ms;
+  --dur-blink: 1000ms;
+  --dur-type: 24ms;   /* pr. tegn i skrivemaskine-effekt */
+  --ease-frames: steps(3, end);
+  --ease-enter: cubic-bezier(.2, .8, .2, 1);
+  --ease-exit: cubic-bezier(.6, 0, .9, .4);
+
+  /* ---------- Layout ---------- */
+  --w-sidebar: 264px;
+  --w-list: 384px;
+  --w-detail-max: 760px;
+}
+
+/* ==========================================================================
+   Temaer — semantiske roller. Komponenter bruger KUN disse.
+   ========================================================================== */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --c-ground:      var(--p-dmg-2);  /* baggrund bag panelerne */
+  --c-panel:       var(--p-dmg-3);
+  --c-panel-hi:    var(--p-dmg-4);  /* inputfelter, kort i panel */
+  --c-frame:       var(--p-dmg-0);  /* 4 px rammer */
+  --c-shadow:      var(--p-dmg-1);  /* hård skygge */
+  --c-text:        var(--p-dmg-0);  /* 8.6:1 på panel */
+  --c-text-soft:   var(--p-dmg-1);  /* 4.7:1 på panel */
+  --c-line:        var(--p-dmg-1);  /* skillelinjer, 2 px */
+  --c-select-bg:   var(--p-dmg-2);  /* valgt række */
+  --c-select-text: var(--p-dmg-0);  /* 5.0:1 */
+  --c-cursor:      var(--p-dmg-0);  /* ▶-markør */
+  --c-focus:       var(--p-wine);
+  --c-primary:     var(--p-dmg-1);
+  --c-on-primary:  var(--p-dmg-4);  /* 6.0:1 */
+  --c-secondary:   var(--p-dmg-4);
+  --c-on-secondary:var(--p-dmg-0);
+  --c-danger:      var(--p-wine);
+  --c-on-danger:   var(--p-dmg-4);  /* 7.7:1 */
+  --c-danger-text: var(--p-wine);   /* 6.0:1 på panel */
+  --c-ok:          var(--p-dmg-0);
+  --c-badge-bg:    var(--p-wine);
+  --c-badge-text:  var(--p-dmg-4);
+  --c-toast-bg:    var(--p-dmg-0);
+  --c-toast-text:  var(--p-dmg-4);
+  --c-hp:          var(--p-dmg-1);
+  --c-hp-empty:    var(--p-dmg-4);
+  --c-link:        var(--p-dmg-0);
+  --c-scanline:    rgba(15, 56, 15, .06);
+  --c-bezel:        var(--p-dmg-1);  /* konsol-kabinet på mobil */
+  --c-bezel-text:   var(--p-dmg-4);  /* 6.0:1 */
+  --c-bezel-shadow: var(--p-dmg-0);
+  /* identicon-farver (forgrund på --c-av-bg) */
+  --c-av-bg:  var(--p-dmg-4);
+  --c-av-1:   var(--p-dmg-0);
+  --c-av-2:   var(--p-dmg-1);
+  --c-av-3:   var(--p-wine);
+  --c-av-4:   var(--p-dmg-0);
+  --c-av-5:   var(--p-dmg-1);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --c-ground:      var(--p-crt-0);
+  --c-panel:       var(--p-crt-1);
+  --c-panel-hi:    var(--p-crt-0);
+  --c-frame:       var(--p-crt-4);  /* hvide RPG-rammer */
+  --c-shadow:      var(--p-crt-2);
+  --c-text:        var(--p-crt-4);  /* 12.5:1 på panel */
+  --c-text-soft:   var(--p-crt-3);  /* 7.8:1 */
+  --c-line:        var(--p-crt-2);  /* 3.3:1 — kun grafik */
+  --c-select-bg:   var(--p-blue);
+  --c-select-text: var(--p-crt-0);  /* 7.8:1 */
+  --c-cursor:      var(--p-yellow);
+  --c-focus:       var(--p-yellow);
+  --c-primary:     var(--p-blue);
+  --c-on-primary:  var(--p-crt-0);
+  --c-secondary:   var(--p-crt-0);
+  --c-on-secondary:var(--p-crt-4);
+  --c-danger:      var(--p-red);
+  --c-on-danger:   var(--p-crt-0);  /* 4.9:1 */
+  --c-danger-text: var(--p-pink);   /* 5.5:1 på panel */
+  --c-ok:          var(--p-green);
+  --c-badge-bg:    var(--p-yellow);
+  --c-badge-text:  var(--p-crt-0);
+  --c-toast-bg:    var(--p-yellow);
+  --c-toast-text:  var(--p-crt-0);
+  --c-hp:          var(--p-green);
+  --c-hp-empty:    var(--p-crt-0);
+  --c-link:        var(--p-blue);
+  --c-scanline:    rgba(0, 0, 0, .22);
+  --c-bezel:        var(--p-crt-2);  /* lavendel kabinet */
+  --c-bezel-text:   var(--p-crt-0);  /* 4.6:1 */
+  --c-bezel-shadow: var(--p-crt-0);
+  --c-av-bg:  var(--p-crt-0);
+  --c-av-1:   var(--p-blue);
+  --c-av-2:   var(--p-green);
+  --c-av-3:   var(--p-yellow);
+  --c-av-4:   var(--p-pink);
+  --c-av-5:   var(--p-crt-4);
+}
