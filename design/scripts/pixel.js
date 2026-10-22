@@ -199,7 +199,7 @@
     el.setAttribute("aria-label", full);
     if (still) { el.textContent = full; return () => {}; }
     let i = 0, timer = null;
-    const speed = opts.speed || 24;
+    const speed = opts.speed || 12;
     const visible = document.createElement("span");
     visible.setAttribute("aria-hidden", "true");
     const caret = document.createElement("span");

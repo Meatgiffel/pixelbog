@@ -275,7 +275,7 @@ export function sfx(name: SoundName) { tones(SOUNDS[name]); }
 
 /* ---------- Skrivemaskine ---------- */
 /** Skriver `full` frem tegn for tegn. Returnerer synlig tekst og en funktion, der springer til slut. */
-export function useTypewriter(full: string, still: boolean, speed = 24): [string, boolean, () => void] {
+export function useTypewriter(full: string, still: boolean, speed = 12): [string, boolean, () => void] {
   const [i, setI] = useState(still ? full.length : 0);
   useEffect(() => { setI(still ? full.length : 0); }, [full, still]);
   useEffect(() => {

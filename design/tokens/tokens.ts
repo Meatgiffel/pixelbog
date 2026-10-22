@@ -11,6 +11,7 @@ export const palette = {
   dmg2: "#8BAC0F",
   dmg3: "#C9D89A",
   dmg4: "#E6EECB",
+  dmg5: "#F5F8EC",
   wine: "#7E2553",
   crt0: "#0B0E1A",
   crt1: "#1D2B53",
@@ -30,6 +31,7 @@ export interface ThemeRoles {
   ground: string;
   panel: string;
   panelHi: string;
+  hover: string;
   frame: string;
   shadow: string;
   text: string;
@@ -37,6 +39,7 @@ export interface ThemeRoles {
   line: string;
   selectBg: string;
   selectText: string;
+  selectBar: string;
   cursor: string;
   focus: string;
   primary: string;
@@ -54,6 +57,7 @@ export interface ThemeRoles {
   hp: string;
   hpEmpty: string;
   link: string;
+  backdrop: string;
   bezel: string;
   bezelText: string;
   bezelShadow: string;
@@ -63,50 +67,55 @@ export interface ThemeRoles {
 
 export const themes: Record<ThemeName, ThemeRoles> = {
   light: {
-    ground: palette.dmg2,
-    panel: palette.dmg3,
-    panelHi: palette.dmg4,
-    frame: palette.dmg0,
-    shadow: palette.dmg1,
+    ground: palette.dmg3,
+    panel: palette.dmg4,
+    panelHi: palette.dmg5,
+    hover: palette.dmg5,
+    frame: palette.dmg1,
+    shadow: palette.dmg2,
     text: palette.dmg0,
     textSoft: palette.dmg1,
-    line: palette.dmg1,
-    selectBg: palette.dmg2,
+    line: palette.dmg2,
+    selectBg: palette.dmg3,
     selectText: palette.dmg0,
+    selectBar: palette.dmg1,
     cursor: palette.dmg0,
     focus: palette.wine,
     primary: palette.dmg1,
-    onPrimary: palette.dmg4,
-    secondary: palette.dmg4,
+    onPrimary: palette.dmg5,
+    secondary: palette.dmg5,
     onSecondary: palette.dmg0,
     danger: palette.wine,
-    onDanger: palette.dmg4,
+    onDanger: palette.dmg5,
     dangerText: palette.wine,
     ok: palette.dmg0,
     badgeBg: palette.wine,
-    badgeText: palette.dmg4,
+    badgeText: palette.dmg5,
     toastBg: palette.dmg0,
-    toastText: palette.dmg4,
+    toastText: palette.dmg5,
     hp: palette.dmg1,
-    hpEmpty: palette.dmg4,
+    hpEmpty: palette.dmg5,
     link: palette.dmg0,
-    bezel: palette.dmg1,
-    bezelText: palette.dmg4,
-    bezelShadow: palette.dmg0,
-    avatarBg: palette.dmg4,
+    backdrop: "rgba(15, 56, 15, .35)",
+    bezel: palette.dmg3,
+    bezelText: palette.dmg0,
+    bezelShadow: palette.dmg2,
+    avatarBg: palette.dmg5,
     avatarFg: [palette.dmg0, palette.dmg1, palette.wine, palette.dmg0, palette.dmg1],
   },
   dark: {
     ground: palette.crt0,
     panel: palette.crt1,
     panelHi: palette.crt0,
-    frame: palette.crt4,
-    shadow: palette.crt2,
+    hover: "rgba(255, 241, 232, .07)",
+    frame: palette.crt2,
+    shadow: palette.crt0,
     text: palette.crt4,
     textSoft: palette.crt3,
-    line: palette.crt2,
-    selectBg: palette.blue,
-    selectText: palette.crt0,
+    line: "rgba(131, 118, 156, .55)",
+    selectBg: palette.crt0,
+    selectText: palette.crt4,
+    selectBar: palette.blue,
     cursor: palette.yellow,
     focus: palette.yellow,
     primary: palette.blue,
@@ -119,13 +128,14 @@ export const themes: Record<ThemeName, ThemeRoles> = {
     ok: palette.green,
     badgeBg: palette.yellow,
     badgeText: palette.crt0,
-    toastBg: palette.yellow,
+    toastBg: palette.crt4,
     toastText: palette.crt0,
     hp: palette.green,
     hpEmpty: palette.crt0,
     link: palette.blue,
-    bezel: palette.crt2,
-    bezelText: palette.crt0,
+    backdrop: "rgba(11, 14, 26, .7)",
+    bezel: palette.crt0,
+    bezelText: palette.crt4,
     bezelShadow: palette.crt0,
     avatarBg: palette.crt0,
     avatarFg: [palette.blue, palette.green, palette.yellow, palette.pink, palette.crt4],
@@ -139,10 +149,14 @@ export const photoRamp: Record<ThemeName, readonly string[]> = {
 };
 
 export const font = {
+  /** Kun logo og titelskærm. */
   display: '"Press Start 2P", "Silkscreen", monospace',
-  ui: '"Silkscreen", "Press Start 2P", monospace',
+  /** Korte overskrifter: paneltitler, A/B/C, sektioner, toast-titel. */
+  pixel: '"Silkscreen", "Press Start 2P", monospace',
+  /** Knapper, labels, menu, chips (vægt 600). */
+  ui: '"IBM Plex Mono", ui-monospace, monospace',
   data: '"IBM Plex Mono", ui-monospace, monospace',
-  dialog: '"VT323", "IBM Plex Mono", monospace',
+  dialog: '"IBM Plex Mono", ui-monospace, monospace',
 } as const;
 
 /** Pixel-skrifter er kun skarpe på multipla af 8 px. */
@@ -154,7 +168,7 @@ export const fontSize = {
   dataL: 20,
   data: 16,
   dataS: 14,
-  dialog: 24,
+  dialog: 18,
 } as const;
 
 export const lineHeight = { data: 1.5, ui: 1.25 } as const;
@@ -162,7 +176,7 @@ export const lineHeight = { data: 1.5, ui: 1.25 } as const;
 /** Pixel-grid: multipla af 4 px. */
 export const space = { 1: 4, 2: 8, 3: 12, 4: 16, 5: 20, 6: 24, 8: 32, 10: 40, 12: 48, 16: 64 } as const;
 
-export const border = { panel: 4, field: 2 } as const;
+export const border = { panel: 2, field: 2 } as const;
 export const shadow = { offset: 4, press: 2 } as const;
 
 export const size = {
@@ -182,7 +196,7 @@ export const motion = {
   base: 240,
   exit: 160,
   blink: 1000,
-  typePerChar: 24,
+  typePerChar: 12,
 } as const;
 
 export const breakpoint = { tablet: 768, desktop: 1024 } as const;

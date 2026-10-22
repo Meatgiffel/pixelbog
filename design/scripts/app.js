@@ -18,7 +18,7 @@
 
   /* ---------- Indstillinger ---------- */
   const SETTINGS_KEY = "pixelbog.settings.v1";
-  const settings = Object.assign({ theme: "system", scan: true, motion: true, sound: false }, IS_DEMO ? {} : safeLoad());
+  const settings = Object.assign({ theme: "system", scan: false, motion: true, sound: false }, IS_DEMO ? {} : safeLoad());
   if (params.get("theme")) settings.theme = params.get("theme");
   if (IS_DEMO) settings.scan = params.get("fx") === "scan";
   function safeLoad() { try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {}; } catch (e) { return {}; } }
@@ -221,7 +221,7 @@
             <h1>PIXELBOG</h1>
             <p class="title-sub">Kontakter · CardDAV</p>
           </div>
-          <p class="title-sub blink" aria-hidden="true">— Tryk start —</p>
+          <p class="title-sub" aria-hidden="true">— Tryk start —</p>
           <form class="title-form panel" id="login-form" novalidate aria-labelledby="login-title">
             <h2 class="sr-only" id="login-title">Log ind</h2>
             ${alert}

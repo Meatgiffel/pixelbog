@@ -51,7 +51,7 @@ export function Login() {
           <h1>PIXELBOG</h1>
           <p className="title-sub">Kontakter · CardDAV</p>
         </div>
-        <p className="title-sub blink" aria-hidden="true">— Tryk start —</p>
+        <p className="title-sub" aria-hidden="true">— Tryk start —</p>
         <form className="title-form panel" noValidate aria-labelledby="login-title" onSubmit={submit}>
           <h2 className="sr-only" id="login-title">Log ind</h2>
           {error === "auth" ? (

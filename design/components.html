@@ -126,7 +126,7 @@
     </header>
 
     <section class="master" aria-labelledby="pal-title">
-      <h2 id="pal-title">PIXELBOG-16 · hele paletten</h2>
+      <h2 id="pal-title">PIXELBOG · hele paletten</h2>
       <div class="swatches" id="master"></div>
       <p class="spec">Flade farver, ingen gradienter. DMG-tonerne bærer lys tilstand, PICO-8-inspirerede toner bærer mørk tilstand. Vin-rød (#7E2553) er fare-farven i lys tilstand. Fotos kvantiseres til 4 grønne toner (lys) eller 5 kølige toner (mørk).</p>
     </section>
@@ -146,7 +146,7 @@
     const D = window.PixelData;
     const P = [
       ["dmg-0", "#0F380F", "Blæk"], ["dmg-1", "#306230", "Mørk grøn"], ["dmg-2", "#8BAC0F", "LCD-grøn"], ["dmg-3", "#C9D89A", "Papirgrøn"],
-      ["dmg-4", "#E6EECB", "Papir lys"], ["wine", "#7E2553", "Vin (fare)"], ["crt-0", "#0B0E1A", "Natsort"], ["crt-1", "#1D2B53", "RPG-blå"],
+      ["dmg-4", "#E6EECB", "Papir lys"], ["dmg-5", "#F5F8EC", "Papir hvid"], ["wine", "#7E2553", "Vin (fare)"], ["crt-0", "#0B0E1A", "Natsort"], ["crt-1", "#1D2B53", "RPG-blå"],
       ["crt-2", "#83769C", "Lavendel"], ["crt-3", "#C2C3C7", "Lysegrå"], ["crt-4", "#FFF1E8", "Fosfor-hvid"], ["blue", "#29ADFF", "Blå"],
       ["green", "#00E436", "Grøn"], ["yellow", "#FFEC27", "Gul"], ["pink", "#FF77A8", "Pink"], ["red", "#FF004D", "Rød"],
     ];
@@ -177,13 +177,13 @@
           <p class="spec">Kontrast er målt mod <code>--c-panel</code>. <code>--c-line</code> og <code>--c-shadow</code> bruges kun til grafik (≥ 3:1).</p></div>
 
         <div class="card px"><h3>Typografi</h3>
-          <div class="type-sample"><span class="t-display-xl">PIXELBOG</span><small>Press Start 2P · 32 px · logo</small></div>
-          <div class="type-sample"><span class="t-display-l">Karakterark</span><small>Press Start 2P · 24 px · overskrift</small></div>
-          <div class="type-sample"><span class="t-display-m">TELEFONER</span><small>Press Start 2P · 16 px · panel-titel</small></div>
-          <div class="type-sample"><span class="t-ui">Gem · Annuller · Mobil</span><small>Silkscreen · 16 px · knapper og labels</small></div>
+          <div class="type-sample"><span class="t-display-xl">PIXELBOG</span><small>Press Start 2P · 32 px · kun logo og titelskærm</small></div>
+          <div class="type-sample"><span class="t-pixel">Karakterark · Telefoner · A B C</span><small>Silkscreen · 16 px · korte overskrifter</small></div>
+          <div class="type-sample"><span class="sheet-name" style="font-size:24px">Mette Kristensen</span><small>IBM Plex Mono 600 · 24 px · navn i karakterarket</small></div>
+          <div class="type-sample"><span class="t-ui">Gem · Annuller · Mobil</span><small>IBM Plex Mono 600 · 16 px · knapper og labels</small></div>
           <div class="type-sample"><span class="t-data"><strong>Mette Kristensen</strong> · <span class="t-tabular">+45 28 14 63 90</span></span><small>IBM Plex Mono · 16 px · alle data, tabulære tal</small></div>
           <div class="type-sample"><span class="t-data-s">Vesterbrogade 12, 3. tv., 1620 København V</span><small>IBM Plex Mono · 14 px · kun meta-linjer</small></div>
-          <div class="type-sample"><span style="font-family:var(--font-dialog);font-size:var(--fs-dialog);line-height:1.25">Vil du virkelig slette Mette Kristensen?</span><small>VT323 · 24 px · RPG-dialoger</small></div>
+          <div class="type-sample"><span style="font-family:var(--font-dialog);font-size:var(--fs-dialog);line-height:1.5">Vil du virkelig slette Mette Kristensen?</span><small>IBM Plex Mono · 18 px · dialogtekst</small></div>
         </div>
 
         <div class="card px"><h3>Læsbarhed ved høj tæthed</h3>
@@ -199,11 +199,11 @@
         <div class="card px"><h3>Pixel-grid, rammer og skygger</h3>
           <div class="space-bars">${[4, 8, 12, 16, 24, 32, 48, 64].map((n) => `<div><span class="t-tabular">${n}px</span><i style="width:${n * 2}px"></i></div>`).join("")}</div>
           <div class="grid-spec">
-            <div><span class="grid-box px"></span><span class="spec">Panel · 4 px ramme · 4 px skygge</span></div>
+            <div><span class="grid-box px"></span><span class="spec">Panel · 2 px ramme · 4 px skygge</span></div>
             <div><span class="grid-box px px-thin px-flat"></span><span class="spec">Felt · 2 px ramme · ingen skygge</span></div>
             <div><span class="grid-box px px-flat"></span><span class="spec">Trykket · skygge 0</span></div>
           </div>
-          <p class="spec">Rammen er fire box-shadows, så hjørnerne bliver trappetrin på 4 px. To ekstra skygger giver den hårde skygge uden blur. Se <code>pixelFrame()</code> i <code>tokens.ts</code>.</p>
+          <p class="spec">Rammen er fire box-shadows, så hjørnerne bliver små trappetrin på 2 px. To ekstra skygger giver den hårde skygge uden blur. Se <code>pixelFrame()</code> i <code>tokens.ts</code>.</p>
         </div>
 
         <div class="card px"><h3>Knapper</h3>
@@ -215,7 +215,7 @@
             <span class="t-ui">Trykket</span>${btn("btn-primary is-pressed", "Gem", "check")}${btn("is-pressed", "Rediger", "edit")}${btn("btn-danger is-pressed", "Slet", "trash")}
             <span class="t-ui">Fra</span>${btn("btn-primary", "Gem", "check", " disabled")}${btn("", "Rediger", "edit", " disabled")}${btn("btn-danger", "Slet", "trash", " disabled")}
           </div>
-          <p class="spec">Hover og fokus viser en blinkende ▶. Trykket flytter knappen 2 px, og skyggen forsvinder. Fokus får desuden en 2 px ring i <code>--c-focus</code>. Prøv at klikke: knapperne er rigtige.</p>
+          <p class="spec">Hover og fokus viser en fast ▶ (ingen blink). Trykket flytter knappen 2 px, og skyggen forsvinder. Fokus får desuden en 2 px ring i <code>--c-focus</code>. Prøv at klikke: knapperne er rigtige.</p>
           <div class="demo-row">${btn("btn-icon", "", "close", ' aria-label="Luk"')}${btn("btn-ghost", "Tilbage til redigering", "")}<button type="button" class="btn btn-primary">${icon("plus")}<span class="btn-label">Ny kontakt</span></button></div>
         </div>
 
@@ -270,7 +270,7 @@
               </div>
             </div>
           </div>
-          <p class="spec">Teksten skrives frem tegn for tegn (24 ms). Et klik viser hele teksten med det samme. Skærmlæsere får hele teksten fra starten. Fokus starter på det sikre valg (NEJ), og ↑/↓ flytter markøren.</p>
+          <p class="spec">Teksten skrives frem tegn for tegn (12 ms). Et klik viser hele teksten med det samme. Skærmlæsere får hele teksten fra starten. Fokus starter på det sikre valg (NEJ), og ↑/↓ flytter markøren.</p>
         </div>
 
         <div class="card px"><h3>Toast og badges</h3>

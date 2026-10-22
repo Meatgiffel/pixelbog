@@ -20,6 +20,7 @@
   --p-dmg-2: #8BAC0F;   /* LCD-grøn */
   --p-dmg-3: #C9D89A;   /* papirgrøn */
   --p-dmg-4: #E6EECB;   /* papir lys */
+  --p-dmg-5: #F5F8EC;   /* papir hvid (felter) */
   --p-wine:  #7E2553;   /* fare (lys) · delt */
   /* CRT-nat — mørk tilstand */
   --p-crt-0: #0B0E1A;   /* natsort */
@@ -34,10 +35,12 @@
   --p-red:    #FF004D;
 
   /* ---------- Skrifttyper ---------- */
-  --font-display: "Press Start 2P", "Silkscreen", monospace;   /* logo, H1-H2 — kun 16/24/32 px */
-  --font-ui:      "Silkscreen", "Press Start 2P", monospace;    /* knapper, labels, chips — 16 px */
+  /* Nedtonet: pixel-skrift kun som accent — alt man læser eller klikker på er Plex Mono */
+  --font-display: "Press Start 2P", "Silkscreen", monospace;   /* kun logo/titelskærm — 16/24/40 px */
+  --font-pixel:   "Silkscreen", "Press Start 2P", monospace;    /* korte overskrifter: paneltitler, A/B/C, sektioner */
+  --font-ui:      "IBM Plex Mono", ui-monospace, monospace;     /* knapper, labels, menu, chips */
   --font-data:    "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace; /* navne, numre, adresser */
-  --font-dialog:  "VT323", "IBM Plex Mono", monospace;          /* RPG-tekstbokse — 24 px */
+  --font-dialog:  "IBM Plex Mono", ui-monospace, monospace;     /* dialogtekst */
 
   /* Pixel-skrifter er kun skarpe på multipla af 8 px */
   --fs-display-xl: 32px;
@@ -47,10 +50,10 @@
   --fs-data-l:     20px;
   --fs-data:       16px;
   --fs-data-s:     14px;   /* kun sekundære meta-linjer */
-  --fs-dialog:     24px;
+  --fs-dialog:     18px;
   --lh-data:       1.5;
   --lh-ui:         1.25;
-  --ls-ui:         0.04em;
+  --ls-ui:         0;
 
   /* ---------- Pixel-grid (alt er multipla af 4 px) ---------- */
   --px: 4px;
@@ -66,7 +69,7 @@
   --sp-16: 64px;
 
   /* ---------- Rammer og skygger ---------- */
-  --bw-panel: 4px;   /* paneler, dialoger, knapper */
+  --bw-panel: 2px;   /* paneler, dialoger, knapper */
   --bw-field: 2px;   /* inputfelter, chips */
   --sh-offset: 4px;  /* hård skygge, ingen blur */
   --press-offset: 2px;
@@ -85,7 +88,7 @@
   --dur-base: 240ms;
   --dur-exit: 160ms;
   --dur-blink: 1000ms;
-  --dur-type: 24ms;   /* pr. tegn i skrivemaskine-effekt */
+  --dur-type: 12ms;   /* pr. tegn i skrivemaskine-effekt */
   --ease-frames: steps(3, end);
   --ease-enter: cubic-bezier(.2, .8, .2, 1);
   --ease-exit: cubic-bezier(.6, 0, .9, .4);
@@ -102,39 +105,42 @@
 :root,
 [data-theme="light"] {
   color-scheme: light;
-  --c-ground:      var(--p-dmg-2);  /* baggrund bag panelerne */
-  --c-panel:       var(--p-dmg-3);
-  --c-panel-hi:    var(--p-dmg-4);  /* inputfelter, kort i panel */
-  --c-frame:       var(--p-dmg-0);  /* 4 px rammer */
-  --c-shadow:      var(--p-dmg-1);  /* hård skygge */
-  --c-text:        var(--p-dmg-0);  /* 8.6:1 på panel */
-  --c-text-soft:   var(--p-dmg-1);  /* 4.7:1 på panel */
-  --c-line:        var(--p-dmg-1);  /* skillelinjer, 2 px */
-  --c-select-bg:   var(--p-dmg-2);  /* valgt række */
-  --c-select-text: var(--p-dmg-0);  /* 5.0:1 */
+  --c-ground:      var(--p-dmg-3);  /* rolig papirgrøn bag panelerne */
+  --c-panel:       var(--p-dmg-4);
+  --c-panel-hi:    var(--p-dmg-5);  /* inputfelter */
+  --c-hover:       var(--p-dmg-5);
+  --c-frame:       var(--p-dmg-1);  /* 2 px rammer, 6.0:1 */
+  --c-shadow:      var(--p-dmg-2);  /* blød hård skygge */
+  --c-text:        var(--p-dmg-0);  /* 11:1 på panel */
+  --c-text-soft:   var(--p-dmg-1);  /* 6.0:1 på panel */
+  --c-line:        var(--p-dmg-2);  /* skillelinjer — kun dekoration */
+  --c-select-bg:   var(--p-dmg-3);  /* valgt række */
+  --c-select-text: var(--p-dmg-0);  /* 8.6:1 */
+  --c-select-bar:  var(--p-dmg-1);  /* 4 px markeringsstreg til venstre */
   --c-cursor:      var(--p-dmg-0);  /* ▶-markør */
   --c-focus:       var(--p-wine);
   --c-primary:     var(--p-dmg-1);
-  --c-on-primary:  var(--p-dmg-4);  /* 6.0:1 */
-  --c-secondary:   var(--p-dmg-4);
+  --c-on-primary:  var(--p-dmg-5);  /* 6.6:1 */
+  --c-secondary:   var(--p-dmg-5);
   --c-on-secondary:var(--p-dmg-0);
   --c-danger:      var(--p-wine);
-  --c-on-danger:   var(--p-dmg-4);  /* 7.7:1 */
-  --c-danger-text: var(--p-wine);   /* 6.0:1 på panel */
+  --c-on-danger:   var(--p-dmg-5);  /* 8.4:1 */
+  --c-danger-text: var(--p-wine);   /* 7.7:1 på panel */
   --c-ok:          var(--p-dmg-0);
   --c-badge-bg:    var(--p-wine);
-  --c-badge-text:  var(--p-dmg-4);
+  --c-badge-text:  var(--p-dmg-5);
   --c-toast-bg:    var(--p-dmg-0);
-  --c-toast-text:  var(--p-dmg-4);
+  --c-toast-text:  var(--p-dmg-5);
   --c-hp:          var(--p-dmg-1);
-  --c-hp-empty:    var(--p-dmg-4);
+  --c-hp-empty:    var(--p-dmg-5);
   --c-link:        var(--p-dmg-0);
-  --c-scanline:    rgba(15, 56, 15, .06);
-  --c-bezel:        var(--p-dmg-1);  /* konsol-kabinet på mobil */
-  --c-bezel-text:   var(--p-dmg-4);  /* 6.0:1 */
-  --c-bezel-shadow: var(--p-dmg-0);
+  --c-scanline:    rgba(15, 56, 15, .05);
+  --c-backdrop:    rgba(15, 56, 15, .35);
+  --c-bezel:        var(--p-dmg-3);  /* mobil: samme flade som baggrunden */
+  --c-bezel-text:   var(--p-dmg-0);
+  --c-bezel-shadow: var(--p-dmg-2);
   /* identicon-farver (forgrund på --c-av-bg) */
-  --c-av-bg:  var(--p-dmg-4);
+  --c-av-bg:  var(--p-dmg-5);
   --c-av-1:   var(--p-dmg-0);
   --c-av-2:   var(--p-dmg-1);
   --c-av-3:   var(--p-wine);
@@ -147,17 +153,19 @@
   --c-ground:      var(--p-crt-0);
   --c-panel:       var(--p-crt-1);
   --c-panel-hi:    var(--p-crt-0);
-  --c-frame:       var(--p-crt-4);  /* hvide RPG-rammer */
-  --c-shadow:      var(--p-crt-2);
+  --c-hover:       rgba(255, 241, 232, .07);
+  --c-frame:       var(--p-crt-2);  /* dæmpede lavendel-rammer, 3.3:1 */
+  --c-shadow:      var(--p-crt-0);
   --c-text:        var(--p-crt-4);  /* 12.5:1 på panel */
   --c-text-soft:   var(--p-crt-3);  /* 7.8:1 */
-  --c-line:        var(--p-crt-2);  /* 3.3:1 — kun grafik */
-  --c-select-bg:   var(--p-blue);
-  --c-select-text: var(--p-crt-0);  /* 7.8:1 */
+  --c-line:        rgba(131, 118, 156, .55); /* skillelinjer — kun dekoration */
+  --c-select-bg:   var(--p-crt-0);
+  --c-select-text: var(--p-crt-4);  /* 17:1 */
+  --c-select-bar:  var(--p-blue);
   --c-cursor:      var(--p-yellow);
   --c-focus:       var(--p-yellow);
   --c-primary:     var(--p-blue);
-  --c-on-primary:  var(--p-crt-0);
+  --c-on-primary:  var(--p-crt-0);  /* 7.8:1 */
   --c-secondary:   var(--p-crt-0);
   --c-on-secondary:var(--p-crt-4);
   --c-danger:      var(--p-red);
@@ -166,14 +174,15 @@
   --c-ok:          var(--p-green);
   --c-badge-bg:    var(--p-yellow);
   --c-badge-text:  var(--p-crt-0);
-  --c-toast-bg:    var(--p-yellow);
+  --c-toast-bg:    var(--p-crt-4);
   --c-toast-text:  var(--p-crt-0);
   --c-hp:          var(--p-green);
   --c-hp-empty:    var(--p-crt-0);
   --c-link:        var(--p-blue);
-  --c-scanline:    rgba(0, 0, 0, .22);
-  --c-bezel:        var(--p-crt-2);  /* lavendel kabinet */
-  --c-bezel-text:   var(--p-crt-0);  /* 4.6:1 */
+  --c-scanline:    rgba(0, 0, 0, .18);
+  --c-backdrop:    rgba(11, 14, 26, .7);
+  --c-bezel:        var(--p-crt-0);
+  --c-bezel-text:   var(--p-crt-4);
   --c-bezel-shadow: var(--p-crt-0);
   --c-av-bg:  var(--p-crt-0);
   --c-av-1:   var(--p-blue);

@@ -12,7 +12,7 @@ export interface Settings {
 }
 
 const KEY = "pixelbog.settings.v1";
-const defaults: Settings = { theme: "system", scan: true, motion: true, sound: false };
+const defaults: Settings = { theme: "system", scan: false, motion: true, sound: false };
 
 function load(): Settings {
   try {
