@@ -38,6 +38,14 @@ Se også `docker-compose.example.yml`.
 
 Brug **HTTPS** foran containeren (Caddy, Traefik, nginx …). Basic auth sender kodeordet med hver forespørgsel, så over ren HTTP kan det læses af alle undervejs.
 
+Med Caddy er det nok med:
+
+```caddyfile
+kontakt.example.com {
+	reverse_proxy 192.168.1.10:8080
+}
+```
+
 Kodeordet ligger i fanens `sessionStorage`, så du kan genindlæse siden uden at logge ind igen. Det slettes, når fanen lukkes, eller når du logger ud. Containeren sender en stram Content-Security-Policy, så fremmede scripts ikke kan læse det.
 
 ## Udvikling

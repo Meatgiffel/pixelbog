@@ -3,7 +3,7 @@
    ========================================================================== */
 import { AuthError, DavClient, DavError, NetworkError, PreconditionError, basicAuth } from "../dav/client";
 import {
-  type Book, createBook as mkBook, deleteCard, discover, fetchCards, getCard, listBooks, newHref, putCard, slugOf,
+  type Book, createBook as mkBook, deleteCard, discover, fetchCards, getCard, listBooks, newHref, putCard, slugOf, uuid,
 } from "../dav/carddav";
 import { type ContactData, ensureRequired, hasIdentity, newCard, readContact, writeContact } from "../vcard/contact";
 import { type CardFailure, type VCard, parseVCard, parseVcf, serialize } from "../vcard/vcard";
@@ -199,7 +199,7 @@ export async function saveContact(
   try {
     if (!prev) {
       const href = newHref(bookById(bookId));
-      const raw = serialize(writeContact(newCard(crypto.randomUUID()), data));
+      const raw = serialize(writeContact(newCard(uuid()), data));
       const etag = await putCard(dav(), href, raw, null);
       const c = toStored(bookId, href, etag, raw)!;
       putStored(c);
@@ -295,7 +295,7 @@ export function planImport(text: string): ImportPlan {
 /** Lægger ét kort op. Kaster med en læsbar grund, hvis serveren afviser det. */
 export async function importOne(bookId: string, card: VCard): Promise<void> {
   const book = bookById(bookId);
-  const raw = serialize(ensureRequired(card, () => crypto.randomUUID()));
+  const raw = serialize(ensureRequired(card, uuid));
   const href = newHref(book);
   try {
     const etag = await putCard(dav(), href, raw, null);
